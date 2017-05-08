@@ -1,6 +1,6 @@
 [Works only for Unix and Windows, not for Mac]
 
-# Prolog-Arimaa
+# Prolog-Arimaa - Spring 2017 IA02 Project
 Tool to create Arimaa Prolog IA with JS game interface. Usage a Pengine to convert Prolog in JS.
 
 ## Install SWI Prolog
@@ -27,7 +27,7 @@ The ONLY file you have to touch to code your IA is ArimaaIA02\apps\arimaa\arimaa
 Your new IA will be loaded (silver player)
 
 ## Problem you may encounter with Unix
-### library uuid can't be loeaded:
+### library uuid can't be loaded:
 1. Install the library [OSSP UUID](http://www.ossp.org/pkg/lib/uuid/)
 2. Recompile prolog (example under Arch Linux):
 	- yaourt -Sy uuid
