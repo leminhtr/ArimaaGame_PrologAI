@@ -1,6 +1,6 @@
 [Works only for Unix and Windows, not for Mac]
 
-# Prolog-Arimaa - Spring 2017 IA02 Project
+# Prolog-Arimaa - Spring 2017 - IA02 Project
 Tool to create Arimaa Prolog IA with JS game interface. Usage a Pengine to convert Prolog in JS.
 
 ## Install SWI Prolog
