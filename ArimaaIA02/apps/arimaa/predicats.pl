@@ -70,15 +70,24 @@ supprimer(X,[Y|L1],L2):-X\==Y , ajout_tete(Y,L3,L2), supprimer(X,L1,L3).
 concat([],L,L).
 concat([T|Q],L,[T|R]):- concat(Q,L,R).
 
-push([A,B,C,D],[W,X,Y,Z]):- board(Board),is_enemy([A,B,C,D],[W,X,Y,Z]), is_stronger([A,B,C,D],[W,X,Y,Z]), H is W+1, is_free([H,X,Y,Z],Board), I is A+1, supprimer([A,B,C,D],Board,Board2), concat([[I,B,C,D]],Board2,Board3),supprimer([W,X,Y,Z],Board3,Board4), concat([[H,X,Y,Z]],Board4,Board5), retractall(board(_)), asserta(board(Board5)). %modification de la base de faits (modification de Board)
+%modification de la base de faits (modification de Board)
+%un push et un pull pour chaque direction
 
-%push([A,B,C,D],[W,X,Y,Z]):-
-%push([A,B,C,D],[W,X,Y,Z]):-
-%push([A,B,C,D],[W,X,Y,Z]):-
+push([A,B,C,D],[W,X,Y,Z]):- board(Board),is_enemy([A,B,C,D],[W,X,Y,Z]), is_stronger([A,B,C,D],[W,X,Y,Z]), H is W+1, is_free([H,X,Y,Z]), I is A+1, supprimer([A,B,C,D],Board,Board2), concat([[I,B,C,D]],Board2,Board3),supprimer([W,X,Y,Z],Board3,Board4), concat([[H,X,Y,Z]],Board4,Board5), retractall(board(_)), asserta(board(Board5)). 
 
-%un push pour chaque direction
+push([A,B,C,D],[W,X,Y,Z]):- board(Board),is_enemy([A,B,C,D],[W,X,Y,Z]), is_stronger([A,B,C,D],[W,X,Y,Z]), H is W-1, is_free([H,X,Y,Z]), I is A-1, supprimer([A,B,C,D],Board,Board2), concat([[I,B,C,D]],Board2,Board3),supprimer([W,X,Y,Z],Board3,Board4), concat([[H,X,Y,Z]],Board4,Board5), retractall(board(_)), asserta(board(Board5)). 
 
-%pull
+push([A,B,C,D],[W,X,Y,Z]):- board(Board),is_enemy([A,B,C,D],[W,X,Y,Z]), is_stronger([A,B,C,D],[W,X,Y,Z]), H is X+1, is_free([H,X,Y,Z]), I is B+1, supprimer([A,B,C,D],Board,Board2), concat([[I,B,C,D]],Board2,Board3),supprimer([W,X,Y,Z],Board3,Board4), concat([[H,X,Y,Z]],Board4,Board5), retractall(board(_)), asserta(board(Board5)). 
+
+push([A,B,C,D],[W,X,Y,Z]):- board(Board),is_enemy([A,B,C,D],[W,X,Y,Z]), is_stronger([A,B,C,D],[W,X,Y,Z]), H is X-1, is_free([H,X,Y,Z]), I is B-1, supprimer([A,B,C,D],Board,Board2), concat([[I,B,C,D]],Board2,Board3),supprimer([W,X,Y,Z],Board3,Board4), concat([[H,X,Y,Z]],Board4,Board5), retractall(board(_)), asserta(board(Board5)). 
+
+
+pull([A,B,C,D],[W,X,Y,Z]):- board(Board),is_enemy([A,B,C,D],[W,X,Y,Z]), is_stronger([A,B,C,D],[W,X,Y,Z]), reculer([A,B,C,D],[M,N,_,_]), supprimer([W,X,Y,Z],Board,Board2), concat([[A,B,Y,Z]],Board2,Board3), supprimer([A,B,C,D],Board3,Board4), concat([M,N,C,D],Board4,Board5), retractall(board(_)), asserta(board(Board5)).
+
+reculer([A,B,C,D], [X,B,_,_]):- X is A-1, is_free([X,B,C,D]).
+reculer([A,B,C,D], [X,B,_,_]):- X is A+1, is_free([X,B,C,D]).
+reculer([A,B,C,D], [A,X,_,_]):- X is B+1, is_free([A,X,C,D]).
+reculer([A,B,C,D], [A,X,_,_]):- X is B-1, is_free([A,X,C,D]).
 
 
 %get_moves(Moves, Gamestate, Board):-
