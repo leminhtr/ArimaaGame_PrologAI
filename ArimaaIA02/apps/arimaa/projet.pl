@@ -4,6 +4,12 @@
 board([[0,0,rabbit,silver],[0,1,rabbit,silver],[0,2,horse,silver],[0,3,rabbit,silver],[0,4,elephant,silver],[0,5,rabbit,silver],[0,6,rabbit,silver],[0,7,rabbit,silver],[1,0,camel,silver],[1,1,cat,silver],[1,2,rabbit,silver],[1,3,dog,silver],[1,4,rabbit,silver],[4,5,horse,silver],[4,6,dog,gold],
 [1,7,cat,silver],[2,7,rabbit,gold],[6,1,horse,gold],[6,2,camel,silver],[6,3,elephant,gold],[6,4,rabbit,gold],[6,5,dog,gold],[6,6,rabbit,gold],[7,0,rabbit,gold],[7,1,rabbit,gold],[7,2,rabbit,gold],[7,3,cat,gold],[7,4,dog,gold],[7,5,rabbit,gold],[7,6,horse,gold],[7,7,rabbit,gold]]).
 
+
+%%% Fonction générale :
+
+% Retourne le maximum et son index (à partir de zéro !)dans une liste 
+max_list(L, M, I) :- nth0(I, L, M), \+ (member(E, L), E > M).
+
 % predicats pour la comparaison de la force des pieces
 
 strength([_,_,elephant,_],6).
@@ -16,6 +22,9 @@ strength([_,_,rabbit,_],1).
 is_stronger(Piece1,Piece2):- strength(Piece1,X),strength(Piece2,Y), X>Y.
 
 % predicat de capture d'une piece
+
+is_silver([_,_,_,silver]).
+is_gold([_,_,_,gold]).
 
 trap([3,3,_,_]).
 trap([6,6,_,_]).
@@ -105,6 +114,7 @@ move([A,B,C,D]):- move_down([A,B,C,D]).
 
 
 is_rabbit([A,B,C,D]):- C==rabbit.
+% ou is_rabbit([_,_,rabbit,_]).
 
 first_rabbit([T|Q],T):- is_rabbit(T).
 first_rabbit([T|Q],X):-first_rabbit(Q). 
@@ -117,10 +127,63 @@ get_rabbit(Rabbit):-board(Board),first_rabbit(Board,Rabbit).
 
 get_rabbits(RabbitList,[T|Q]):-board([T|Q]), get_rabbit(Rabbit),concat([Rabbit],List, RabbitList),\+ Q=[], get_rabbits(List,Q).
 
-
 %->Objectif : chercher les rabbits dispo (ceux les plus avancés sur le plateau en priorité), et les avancer vers la ligne adversaire le plus vite possible pour gagner
 %donc écrire un fonction qui parmi la liste des lapins, choisi 4 mouvements unitaires à faire effectuer aux lapins les plus avancés sur le board.
 
 %Si plus de rabbits allies (ils ont tous été capturés) alors bouger les autres pièces de façon à gener les mouvements adverses
+
+% Récupère la liste des lapins silver.
+get_rabbits_silver([TRabbitList|QRabbitList],RabbitListSilver):-is_silver(TRabbitList), concat([TRabbitList,ListIntermediaire,RabbitListSilver]), 
+get_rabbits_silver(QRabbitList,ListIntermediaire).
+
+%renseigne quelle est la pièce la plus près du camp gold (entre 2 pièces) : renvoie la position (en ordonnée) de la pièce la plus proche
+is_closer_to_gold_side([_,B,_,_],[_,Y,_,_],B):-B>Y.
+
+% Récupère la position X absicsse
+get_Xpos([X,_,_,_],X).
+%Récupère la position Y ordonnée
+get_Ypos([_,Y,_,_],Y).
+
+%Récupère les positions Y en ordonnée de la liste des pièces en argument.
+get_Ypos_list([], []).
+get_Ypos_list([TList|QList], PosList):-get_Ypos(TList,Y),concat([Y],ListIntermediaire,PosList) get_Ypos_list(QList,ListIntermediaire).
+
+%% Récupère le lapin le plus près du camp gold : 
+%1) Récupère la liste des positions Y des lapins.
+% 2) Cherche le Y max et à quel lapin correspond cette valeur. 
+% 3) Renvoie le lapin ayant la position max.
+get_closest_rabbit_to_gold(RabbitList, Rabbit):-get_Ypos_list(RabbitList,PosList),max_list(PosList,Ymax,WhichRabbit),nth0(WhichRabbit,RabbitList,Rabbit).
+
+% Fais avancer le lapin silver le plus près du camp gold.
+% 1) Récupère la liste des lapins
+% 2) Récupère la liste des lapins silver
+% 3) Récupère le lapin le plus proche du camp gold.
+% 4) Fais avancer ce lapin.
+move_closest_rabbit_silver(Rabbit):-board(Board) get_rabbits(RabbitList,Board),get_rabbits_silver(RabbitList,RabbitListSilver), 
+get_closest_rabbit_to_gold(RabbitList,Rabbit),move(Rabbit).
+
+% Bordure du camp gold
+gold_border([0,7,_,_]). %bas gauche
+gold_border([1,7,_,_]).
+gold_border([2,7,_,_]).
+gold_border([3,7,_,_]).
+gold_border([4,7,_,_]).
+gold_border([5,7,_,_]).
+gold_border([6,7,_,_]).
+gold_border([7,7,_,_]). %bas droite
+
+% Bordure du camp silver
+silver_border([0,0,_,_]). %haut gauche
+silver_border([1,0,_,_]).
+silver_border([2,0,_,_]).
+silver_border([3,0,_,_]).
+silver_border([4,0,_,_]).
+silver_border([5,0,_,_]).
+silver_border([6,0,_,_]).
+silver_border([7,0,_,_]). %haut droite
+
+% Vrai si un lapin silver a atteint le camp gold.
+has_won_silver() :- board(Board), element2([_,7,rabbit,silver],Board).
+
 
 %get_moves(Moves, Gamestate, Board):-
