@@ -182,6 +182,10 @@ silver_border([5,0,_,_]).
 silver_border([6,0,_,_]).
 silver_border([7,0,_,_]). %haut droite
 
+% Enlève une pièce qui est piégée du plateau
+has_lost_piece(Piece):-capture(Piece),board(Board),supprimer(Piece, Board, NewBoard), retractall(board(_)), asserta(board(NewBoard)). 
+
+
 % Vrai si un lapin silver a atteint le camp gold.
 has_won_silver() :- board(Board), element2([_,7,rabbit,silver],Board).
 
