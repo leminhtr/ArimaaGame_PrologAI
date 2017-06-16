@@ -182,12 +182,33 @@ silver_border([5,0,_,_]).
 silver_border([6,0,_,_]).
 silver_border([7,0,_,_]). %haut droite
 
-% Enlève une pièce qui est piégée du plateau
-has_lost_piece(Piece):-capture(Piece),board(Board),supprimer(Piece, Board, NewBoard), retractall(board(_)), asserta(board(NewBoard)). 
 
 
 % Vrai si un lapin silver a atteint le camp gold.
 has_won_silver() :- board(Board), element2([_,7,rabbit,silver],Board).
+
+
+
+
+% gamestate : structure de données fixé : [silver, [[_,_,_silver],[_,_,_silver]], gold, [[_,_,gold],[_,_,gold]]]
+% Ajoute une pièce au gamestate.
+% 1) Récupère dans la liste gamestate : position N de "Team" dans gamestate
+% 2) La liste des pièces mortes de cette team est à la position N+1 de gamestate.
+% 3) Ajoute la pièce au gamestate de l'équipe morte
+% 4) Actualise le gamestate.
+update_Gamestate([X,Y,P,Team]):-gamestate(Gamestate),nth0(N,Gamestate,Team), NthListTeamDead is N+1, nth0(NthListTeamDead,Gamestate,GamestateList),concat([X,Y,P,Team], GamestateList,NewGameState),
+retractall(gamestate(_)), asserta(gamestate([silver,NewGameState])).
+
+
+% Enlève une pièce qui est piégée du plateau
+has_lost_piece(Piece):-capture(Piece),board(Board),supprimer(Piece, Board, NewBoard), retractall(board(_)), asserta(board(NewBoard)), update_Gamestate(Piece).
+
+
+
+
+
+
+
 
 
 %get_moves(Moves, Gamestate, Board):-
