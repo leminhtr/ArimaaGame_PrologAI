@@ -146,7 +146,7 @@ get_Ypos([_,Y,_,_],Y).
 
 %Récupère les positions Y en ordonnée de la liste des pièces en argument.
 get_Ypos_list([], []).
-get_Ypos_list([TList|QList], PosList):-get_Ypos(TList,Y),concat([Y],ListIntermediaire,PosList) get_Ypos_list(QList,ListIntermediaire).
+get_Ypos_list([TList|QList], PosList):-get_Ypos(TList,Y),concat([Y],ListIntermediaire,PosList), get_Ypos_list(QList,ListIntermediaire).
 
 %% Récupère le lapin le plus près du camp gold : 
 %1) Récupère la liste des positions Y des lapins.
@@ -159,8 +159,7 @@ get_closest_rabbit_to_gold(RabbitList, Rabbit):-get_Ypos_list(RabbitList,PosList
 % 2) Récupère la liste des lapins silver
 % 3) Récupère le lapin le plus proche du camp gold.
 % 4) Fais avancer ce lapin.
-move_closest_rabbit_silver(Rabbit):-board(Board) get_rabbits(RabbitList,Board),get_rabbits_silver(RabbitList,RabbitListSilver), 
-get_closest_rabbit_to_gold(RabbitList,Rabbit),move(Rabbit).
+move_closest_rabbit_silver(Rabbit):-board(Board) get_rabbits(RabbitList,Board),get_rabbits_silver(RabbitList,RabbitListSilver), get_closest_rabbit_to_gold(RabbitList,Rabbit),move(Rabbit).
 
 % Bordure du camp gold
 gold_border([0,7,_,_]). %bas gauche
