@@ -93,7 +93,7 @@ pull([A,B,C,D]):- board(Board),enemy([A,B,C,D],[W,X,Y,Z]), is_stronger([A,B,C,D]
 % vérifier que l'on est bien dans les limites du plateau de jeu pour faire un mouvement
 
 % deplacer une piece d'une case
-
+																							% concat([NewPosition], Board2, Board3) ?
 change_board(OldPosition, NewPosition):-board(Board), supprimer(OldPosition,Board,Board2), concat(NewPosition,Board2,Board3),retractall(board(_)), asserta(board(Board3)).
 
 move_up([A,B,C,D]):- X is B+1, board_limit(X), is_free([A,X,C,D]), \+ trap([A,X,C,D]), \+ is_frozen([A,X,C,D]), change_board([A,B,C,D],[A,X,C,D]).
@@ -159,7 +159,7 @@ get_closest_rabbit_to_gold(RabbitList, Rabbit):-get_Ypos_list(RabbitList,PosList
 % 2) Récupère la liste des lapins silver
 % 3) Récupère le lapin le plus proche du camp gold.
 % 4) Fais avancer ce lapin.
-move_closest_rabbit_silver(Rabbit):-board(Board) get_rabbits(RabbitList,Board),get_rabbits_silver(RabbitList,RabbitListSilver), get_closest_rabbit_to_gold(RabbitList,Rabbit),move(Rabbit).
+move_closest_rabbit_silver(Rabbit):-board(Board), get_rabbits(RabbitList,Board),get_rabbits_silver(RabbitList,RabbitListSilver), get_closest_rabbit_to_gold(RabbitList,Rabbit),move(Rabbit).
 
 % Bordure du camp gold
 gold_border([0,7,_,_]). %bas gauche
